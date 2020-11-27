@@ -8,6 +8,7 @@
 #define chance(%1) ( %1 > random(100) )
 
 new g_szModels[6][64], g_iModelCount = 0
+new g_iChances[sizeof g_szModels], g_iChanceSum = 0
 new g_pChanceCvar, g_pTimeCvar, g_pModeCvar, g_pNadeModel
 new g_pInfiniteGrenades
 
@@ -33,6 +34,8 @@ public plugin_precache()
 		{
 			precache_model(g_szModels[i])
 			copy(g_szModels[g_iModelCount], charsmax(g_szModels[]), g_szModels[i])
+			g_iChances[g_iModelCount] = g_iChances[i]
+			g_iChanceSum += g_iChances[g_iModelCount]
 			g_iModelCount++
 		}
 	}
@@ -132,13 +135,14 @@ public set_nade_model_mode3(ent)
 
 model_selector()
 {
-	return clamp(get_pcvar_num(g_pNadeModel), 0, g_iModelCount-1)
+	new select = get_pcvar_num(g_pNadeModel)
+	return select < 0 ? random_item(g_iChances, g_iModelCount) : clamp(select, 0, g_iModelCount-1)
 }
 
 stock random_item(itemChances[], count=sizeof itemChances)
 {
 	static rand, i, sum
-	rand = random(100)
+	rand = random(g_iChanceSum)
 	i = sum = 0
 	for( i = 0; i < count; i++ )
 	{
@@ -161,14 +165,16 @@ LoadSettings()
 
 	if( f )
 	{
-		new szBuffer[64], i = 0
+		new szBuffer[64], i = 0, szModel[sizeof g_szModels[]], szChance[5]
 		
 		while( fgets(f, szBuffer, charsmax(szBuffer)) )
 		{
-			trim(szBuffer)
-			if( szBuffer[0] )
+			parse(szBuffer, szModel, charsmax(szModel), szChance, charsmax(szChance))
+
+			if( szModel[0] )
 			{
-				copy(g_szModels[i], charsmax(g_szModels[]), szBuffer)
+				copy(g_szModels[i], charsmax(g_szModels[]), szModel)
+				g_iChances[i] = str_to_num(szChance)
 				i++
 			}
 		}
