@@ -173,7 +173,7 @@ LoadSettings()
 
 			if( szModel[0] )
 			{
-				copy(g_szModels[i], charsmax(g_szModels[]), szBuffer)
+				copy(g_szModels[i], charsmax(g_szModels[]), szModel)
 				g_iChances[i] = str_to_num(szChance)
 				i++
 			}
