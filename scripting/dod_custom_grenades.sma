@@ -165,7 +165,7 @@ LoadSettings()
 
 	if( f )
 	{
-		new szBuffer[64], i = 0, szModel[64], szChance[5]
+		new szBuffer[64], i = 0, szModel[sizeof g_szModels[]], szChance[5]
 		
 		while( fgets(f, szBuffer, charsmax(szBuffer)) )
 		{
