@@ -14,7 +14,7 @@ new g_pInfiniteGrenades
 
 public plugin_init()
 {
-	register_plugin("DOD Custom Grenades", "1.0", "Fysiks")
+	register_plugin("DOD Custom Grenades", "1.0.1", "Fysiks")
 	
 	g_pModeCvar = register_cvar("custom_nade_mode", "1")
 	g_pChanceCvar = register_cvar("custom_nade_chance", "50")
@@ -171,7 +171,7 @@ LoadSettings()
 		{
 			parse(szBuffer, szModel, charsmax(szModel), szChance, charsmax(szChance))
 
-			if( szModel[0] )
+			if( szModel[0] && szModel[0] != ';' )
 			{
 				copy(g_szModels[i], charsmax(g_szModels[]), szModel)
 				g_iChances[i] = str_to_num(szChance)
