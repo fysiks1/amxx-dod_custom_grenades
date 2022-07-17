@@ -14,7 +14,7 @@ new g_pInfiniteGrenades
 
 public plugin_init()
 {
-	register_plugin("DOD Custom Grenades", "1.0.1", "Fysiks")
+	register_plugin("DOD Custom Grenades", "2.0.0", "Fysiks")
 	
 	g_pModeCvar = register_cvar("custom_nade_mode", "1")
 	g_pChanceCvar = register_cvar("custom_nade_chance", "50")
@@ -87,6 +87,19 @@ public grenade_throw(id, ent, iType)
 					if( chance(get_pcvar_num(g_pChanceCvar)) )
 					{
 						set_task(0.1, "set_nade_model_mode3", ent)
+					}
+				}
+			}
+		}
+		case 4: // Custom model for all nades (at custom_nade_time)
+		{
+			switch( iType )
+			{
+				case DODW_HANDGRENADE, DODW_STICKGRENADE, DODW_HANDGRENADE_EX, DODW_STICKGRENADE_EX:  // Unprimed nades
+				{
+					if( chance(get_pcvar_num(g_pChanceCvar)) )
+					{
+						set_task(get_pcvar_float(g_pTimeCvar), "set_nade_model", ent)
 					}
 				}
 			}

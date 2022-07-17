@@ -21,9 +21,11 @@ These probability values are relative to the sum of all the values (i.e. it's no
 ## CVARS
 ### custom_nade_mode
 
+0. Custom model is disabled
 1. Custom model for unprimed nades (at 'custom_nade_time' after thrown)
 2. Custom model for primed nades (immediately)
 3. Custom model for primed nades (if thrown within the last 'custom_nade_time' second before explosion)
+4. Custom model for all nades (at 'custom_nade_time' after thrown)
 
 ### custom_nade_chance
 
