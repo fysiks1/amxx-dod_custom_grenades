@@ -14,7 +14,7 @@ new g_pInfiniteGrenades
 
 public plugin_init()
 {
-	register_plugin("DOD Custom Grenades", "2.0.0", "Fysiks")
+	register_plugin("DOD Custom Grenades", "2.0.1", "Fysiks")
 	
 	g_pModeCvar = register_cvar("custom_nade_mode", "1")
 	g_pChanceCvar = register_cvar("custom_nade_chance", "50")
@@ -43,6 +43,10 @@ public plugin_precache()
 	if( !g_iModelCount )
 	{
 		set_fail_state("Failed to load any custom nade models")
+	}
+	else
+	{
+		server_print("Loaded %d grenade models", g_iModelCount);
 	}
 }
 
