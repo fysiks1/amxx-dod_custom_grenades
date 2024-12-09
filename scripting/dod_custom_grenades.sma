@@ -6,7 +6,6 @@
 #include <fun>
 
 #define chance(%1) ( %1 > random(100) )
-dummy(){}
 
 new g_szModels[32][64], g_iModelCount = 0
 new g_iChances[sizeof g_szModels], g_iChanceSum = 0
@@ -228,7 +227,8 @@ LoadSettings()
 	}
 
 	// Populate g_szModels based on model pointer
-	for(new j = 0; j < i && j < 3; j++)
+	new iModelsToLoad = 3
+	for(new j = 0; j < i && j < iModelsToLoad; j++)
 	{
 		copy(g_szModels[j], charsmax(g_szModels[]), szModels[(j+g_iModelPointer)%i])
 	}
