@@ -7,14 +7,15 @@
 
 #define chance(%1) ( %1 > random(100) )
 
-new g_szModels[6][64], g_iModelCount = 0
+new g_szModels[32][64], g_iModelCount = 0
 new g_iChances[sizeof g_szModels], g_iChanceSum = 0
 new g_pChanceCvar, g_pTimeCvar, g_pModeCvar, g_pNadeModel
 new g_pInfiniteGrenades
+new g_iCounter
 
 public plugin_init()
 {
-	register_plugin("DOD Custom Grenades", "2.0.1", "Fysiks")
+	register_plugin("DOD Custom Grenades", "2.1.0", "Fysiks")
 	
 	g_pModeCvar = register_cvar("custom_nade_mode", "1")
 	g_pChanceCvar = register_cvar("custom_nade_chance", "50")
@@ -153,7 +154,24 @@ public set_nade_model_mode3(ent)
 model_selector()
 {
 	new select = get_pcvar_num(g_pNadeModel)
-	return select < 0 ? random_item(g_iChances, g_iModelCount) : clamp(select, 0, g_iModelCount-1)
+	new result
+
+	switch( select )
+	{
+		case -1:
+		{
+			result = random_item(g_iChances, g_iModelCount)
+		}
+		case -2:
+		{
+			result = g_iCounter++ % g_iModelCount
+		}
+		default:
+		{
+			result = clamp(select, 0, g_iModelCount-1)
+		}
+	}
+	return result
 }
 
 stock random_item(itemChances[], count=sizeof itemChances)
@@ -186,9 +204,10 @@ LoadSettings()
 		
 		while( fgets(f, szBuffer, charsmax(szBuffer)) )
 		{
+			trim(szBuffer)
 			parse(szBuffer, szModel, charsmax(szModel), szChance, charsmax(szChance))
 
-			if( szModel[0] && szModel[0] != ';' )
+			if( szBuffer[0] && szModel[0] && szModel[0] != ';' ) // Check szBuffer also because parse() doesn't handle empty lines correctly
 			{
 				copy(g_szModels[i], charsmax(g_szModels[]), szModel)
 				g_iChances[i] = str_to_num(szChance)

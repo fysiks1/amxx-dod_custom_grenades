@@ -37,4 +37,8 @@ Time in seconds used by time-based modes.
 
 ### custom_nade_model
 
-Selection for which model will be used for the custom grenade.  Models are zero-based indexed (0 is the first model) and a value of -1 will randomly choose one of the nade models based on the probabily values defined in the config file.
+Selection for which model will be used for the custom grenade.  Models are zero-based indexed (0 is the first model).
+
+#### Special Values
+- -1 will randomly choose one of the nade models based on the probability values defined in the config file.
+- -2 will cycle through all nade models
