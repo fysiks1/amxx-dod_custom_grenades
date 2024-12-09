@@ -6,12 +6,14 @@
 #include <fun>
 
 #define chance(%1) ( %1 > random(100) )
+dummy(){}
 
 new g_szModels[32][64], g_iModelCount = 0
 new g_iChances[sizeof g_szModels], g_iChanceSum = 0
 new g_pChanceCvar, g_pTimeCvar, g_pModeCvar, g_pNadeModel
 new g_pInfiniteGrenades
 new g_iCounter
+new g_iModelPointer = 0
 
 public plugin_init()
 {
@@ -23,6 +25,10 @@ public plugin_init()
 	g_pNadeModel = register_cvar("custom_nade_model", "0")
 	
 	g_pInfiniteGrenades = register_cvar("infinite_nades", "0") // Infinite nades (for testing, mostly)
+
+	new szModelPointer[8]
+	get_localinfo("MdlPtr", szModelPointer, charsmax(szModelPointer))
+	g_iModelPointer = str_to_num(szModelPointer)
 }
 
 public plugin_precache()
@@ -216,4 +222,12 @@ LoadSettings()
 		}
 		fclose(f)
 	}
+}
+
+public plugin_end()
+{
+	static szModelPointer[8]
+	g_iModelPointer = ++g_iModelPointer
+	num_to_str(g_iModelPointer, szModelPointer, charsmax(szModelPointer))
+	set_localinfo("MdlPtr", szModelPointer)
 }
