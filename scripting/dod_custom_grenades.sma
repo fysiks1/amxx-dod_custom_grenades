@@ -17,7 +17,7 @@ new g_iModelPointer = 0
 
 public plugin_init()
 {
-	register_plugin("DOD Custom Grenades", "2.1.0", "Fysiks")
+	register_plugin("DOD Custom Grenades", "2.2.0", "Fysiks")
 	
 	g_pModeCvar = register_cvar("custom_nade_mode", "1")
 	g_pChanceCvar = register_cvar("custom_nade_chance", "50")
@@ -25,10 +25,6 @@ public plugin_init()
 	g_pNadeModel = register_cvar("custom_nade_model", "0")
 	
 	g_pInfiniteGrenades = register_cvar("infinite_nades", "0") // Infinite nades (for testing, mostly)
-
-	new szModelPointer[8]
-	get_localinfo("MdlPtr", szModelPointer, charsmax(szModelPointer))
-	g_iModelPointer = str_to_num(szModelPointer)
 }
 
 public plugin_precache()
@@ -196,8 +192,16 @@ stock random_item(itemChances[], count=sizeof itemChances)
 
 LoadSettings()
 {
+	// Get model pointer and set next value
+	new szModelPointer[8]
+	get_localinfo("MdlPtr", szModelPointer, charsmax(szModelPointer))
+	g_iModelPointer = str_to_num(szModelPointer)
+	num_to_str(g_iModelPointer+1, szModelPointer, charsmax(szModelPointer))
+	set_localinfo("MdlPtr", szModelPointer)
+
 	// Load models and chance values from file
 	new szConfigsDir[64], szFilePath[128]
+	new szModels[32][64], i = 0
 
 	get_configsdir(szConfigsDir, charsmax(szConfigsDir))
 	formatex(szFilePath, charsmax(szFilePath), "%s/custom_nades.ini", szConfigsDir)
@@ -206,28 +210,26 @@ LoadSettings()
 
 	if( f )
 	{
-		new szBuffer[64], i = 0, szModel[sizeof g_szModels[]], szChance[5]
+		new szBuffer[64], szModel[sizeof szModels[]], szChance[5]
 		
 		while( fgets(f, szBuffer, charsmax(szBuffer)) )
 		{
 			trim(szBuffer)
 			parse(szBuffer, szModel, charsmax(szModel), szChance, charsmax(szChance))
 
-			if( szBuffer[0] && szModel[0] && szModel[0] != ';' ) // Check szBuffer also because parse() doesn't handle empty lines correctly
+			if( szBuffer[0] && szModel[0] && szModel[0] != ';' && i < sizeof g_szModels && file_exists(szModel) ) // Check szBuffer also because parse() doesn't handle empty lines correctly
 			{
-				copy(g_szModels[i], charsmax(g_szModels[]), szModel)
+				copy(szModels[i], charsmax(szModels[]), szModel)
 				g_iChances[i] = str_to_num(szChance)
 				i++
 			}
 		}
 		fclose(f)
 	}
-}
 
-public plugin_end()
-{
-	static szModelPointer[8]
-	g_iModelPointer = ++g_iModelPointer
-	num_to_str(g_iModelPointer, szModelPointer, charsmax(szModelPointer))
-	set_localinfo("MdlPtr", szModelPointer)
+	// Populate g_szModels based on model pointer
+	for(new j = 0; j < i && j < 3; j++)
+	{
+		copy(g_szModels[j], charsmax(g_szModels[]), szModels[(j+g_iModelPointer)%i])
+	}
 }
