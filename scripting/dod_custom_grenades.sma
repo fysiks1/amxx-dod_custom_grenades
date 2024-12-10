@@ -200,7 +200,7 @@ LoadSettings()
 
 	// Load models and chance values from file
 	new szConfigsDir[64], szFilePath[128]
-	new szModels[32][64], i = 0
+	new szModels[sizeof g_szModels][64], i = 0
 
 	get_configsdir(szConfigsDir, charsmax(szConfigsDir))
 	formatex(szFilePath, charsmax(szFilePath), "%s/custom_nades.ini", szConfigsDir)
