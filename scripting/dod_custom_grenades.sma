@@ -15,7 +15,7 @@ new g_iCounter
 
 public plugin_init()
 {
-	register_plugin("DOD Custom Grenades", "2.1.0", "Fysiks")
+	register_plugin("DOD Custom Grenades", "2.1.1", "Fysiks")
 	
 	g_pModeCvar = register_cvar("custom_nade_mode", "1")
 	g_pChanceCvar = register_cvar("custom_nade_chance", "50")
@@ -23,6 +23,7 @@ public plugin_init()
 	g_pNadeModel = register_cvar("custom_nade_model", "0")
 	
 	g_pInfiniteGrenades = register_cvar("infinite_nades", "0") // Infinite nades (for testing, mostly)
+	set_pcvar_num(g_pInfiniteGrenades, 0)
 }
 
 public plugin_precache()
