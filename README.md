@@ -42,3 +42,21 @@ Selection for which model will be used for the custom grenade.  Models are zero-
 #### Special Values
 - -1 will randomly choose one of the nade models based on the probability values defined in the config file.
 - -2 will cycle through all nade models
+
+### custom_nade_modelspermap
+
+Number of models to load per map.  This subset of maps will then cycle through all the maps configured in the INI file on each map change.
+
+#### Example
+If `custom_nade_modelspermap` is set to 2 and the INI file is configured as:
+
+```
+"models/grenades/Model1.mdl" 10
+"models/grenades/Model2.mdl" 60
+"models/grenades/Model3.mdl" 30
+```
+
+Then, `Model1` and `Model2` will be loaded on the first map, `Model2` and `Model3` will be loaded on the second map, and `Model3` and `Model1` will be loaded on the third map.  And so on.
+
+#### Special Values
+A value of zero will load all models in the INI file.

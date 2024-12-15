@@ -12,10 +12,12 @@ new g_iChances[sizeof g_szModels], g_iChanceSum = 0
 new g_pChanceCvar, g_pTimeCvar, g_pModeCvar, g_pNadeModel
 new g_pInfiniteGrenades
 new g_iCounter
+new g_iModelPointer = 0
+new g_pModelPerMap
 
 public plugin_init()
 {
-	register_plugin("DOD Custom Grenades", "2.1.1", "Fysiks")
+	register_plugin("DOD Custom Grenades", "2.2.0", "Fysiks")
 	
 	g_pModeCvar = register_cvar("custom_nade_mode", "1")
 	g_pChanceCvar = register_cvar("custom_nade_chance", "50")
@@ -28,6 +30,8 @@ public plugin_init()
 
 public plugin_precache()
 {
+	g_pModelPerMap = register_cvar("custom_nade_modelspermap", "0")
+
 	LoadSettings()
 	
 	for(new i = 0; i < sizeof g_szModels; i++)
@@ -191,8 +195,16 @@ stock random_item(itemChances[], count=sizeof itemChances)
 
 LoadSettings()
 {
+	// Get model pointer and set next value
+	new szModelPointer[8]
+	get_localinfo("MdlPtr", szModelPointer, charsmax(szModelPointer))
+	g_iModelPointer = str_to_num(szModelPointer)
+	num_to_str(g_iModelPointer+1, szModelPointer, charsmax(szModelPointer))
+	set_localinfo("MdlPtr", szModelPointer)
+
 	// Load models and chance values from file
 	new szConfigsDir[64], szFilePath[128]
+	new szModels[sizeof g_szModels][64], i = 0
 
 	get_configsdir(szConfigsDir, charsmax(szConfigsDir))
 	formatex(szFilePath, charsmax(szFilePath), "%s/custom_nades.ini", szConfigsDir)
@@ -201,20 +213,28 @@ LoadSettings()
 
 	if( f )
 	{
-		new szBuffer[64], i = 0, szModel[sizeof g_szModels[]], szChance[5]
+		new szBuffer[64], szModel[sizeof szModels[]], szChance[5]
 		
 		while( fgets(f, szBuffer, charsmax(szBuffer)) )
 		{
 			trim(szBuffer)
 			parse(szBuffer, szModel, charsmax(szModel), szChance, charsmax(szChance))
 
-			if( szBuffer[0] && szModel[0] && szModel[0] != ';' ) // Check szBuffer also because parse() doesn't handle empty lines correctly
+			if( szBuffer[0] && szModel[0] && szModel[0] != ';' && i < sizeof g_szModels && file_exists(szModel) ) // Check szBuffer also because parse() doesn't handle empty lines correctly
 			{
-				copy(g_szModels[i], charsmax(g_szModels[]), szModel)
+				copy(szModels[i], charsmax(szModels[]), szModel)
 				g_iChances[i] = str_to_num(szChance)
 				i++
 			}
 		}
 		fclose(f)
+	}
+
+	// Populate g_szModels based on model pointer & models per map setting
+	new iModelsToLoad = clamp(get_pcvar_num(g_pModelPerMap), 0, i)
+	iModelsToLoad = iModelsToLoad == 0 ? i : iModelsToLoad
+	for(new j = 0; j < i && j < iModelsToLoad; j++)
+	{
+		copy(g_szModels[j], charsmax(g_szModels[]), szModels[(j+g_iModelPointer)%i])
 	}
 }
