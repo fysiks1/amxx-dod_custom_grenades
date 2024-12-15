@@ -4,28 +4,31 @@
 #include <engine>
 #include <dodfun>
 #include <fun>
+#include <hamsandwich>
 
 #define chance(%1) ( %1 > random(100) )
 
 new g_szModels[32][64], g_iModelCount = 0
 new g_iChances[sizeof g_szModels], g_iChanceSum = 0
 new g_pChanceCvar, g_pTimeCvar, g_pModeCvar, g_pNadeModel
-new g_pInfiniteGrenades
 new g_iCounter
 new g_iModelPointer = 0
+new bool:g_bTestMode
 new g_pModelPerMap
+new HamHook:g_TestModeSpawnHook
 
 public plugin_init()
 {
-	register_plugin("DOD Custom Grenades", "2.2.0", "Fysiks")
+	register_plugin("DOD Custom Grenades", "2.3.0", "Fysiks")
 	
 	g_pModeCvar = register_cvar("custom_nade_mode", "1")
 	g_pChanceCvar = register_cvar("custom_nade_chance", "50")
 	g_pTimeCvar = register_cvar("custom_nade_time", "4.8")
 	g_pNadeModel = register_cvar("custom_nade_model", "0")
 	
-	g_pInfiniteGrenades = register_cvar("infinite_nades", "0") // Infinite nades (for testing, mostly)
-	set_pcvar_num(g_pInfiniteGrenades, 0)
+	register_concmd("custom_nade_testmode", "cmdTestMode", ADMIN_RCON)
+	g_TestModeSpawnHook = RegisterHam(Ham_Spawn, "player", "hookSpawnPost", 1)
+	DisableHamForward(g_TestModeSpawnHook)
 }
 
 public plugin_precache()
@@ -116,7 +119,7 @@ public grenade_throw(id, ent, iType)
 		}
 	}
 	
-	if( get_pcvar_num(g_pInfiniteGrenades) )
+	if( g_bTestMode )
 	{
 		// give nade
 		switch( iType )
@@ -236,5 +239,49 @@ LoadSettings()
 	for(new j = 0; j < i && j < iModelsToLoad; j++)
 	{
 		copy(g_szModels[j], charsmax(g_szModels[]), szModels[(j+g_iModelPointer)%i])
+	}
+}
+
+public cmdTestMode(id, level, cid)
+{
+	if( !cmd_access(id, level, cid, 1) )
+		return PLUGIN_HANDLED
+
+	if( read_argc() == 1 )
+	{
+		console_print(id, "Custom nade test mode is %s", g_bTestMode ? "Enabled": "Disable")
+		return PLUGIN_HANDLED
+	}
+	else
+	{
+		g_bTestMode = !!read_argv_int(1)
+	}
+
+	new iPlayers[32], iPlayersNum
+	get_players(iPlayers, iPlayersNum)
+	for( new i = 0; i < iPlayersNum; i++ )
+	{
+		set_user_godmode(iPlayers[i], g_bTestMode)
+	}
+
+	if( g_bTestMode )
+	{
+		EnableHamForward(g_TestModeSpawnHook)
+	}
+	else
+	{
+		DisableHamForward(g_TestModeSpawnHook)
+	}
+	
+	console_print(id, "Custom nade test mode was %s", g_bTestMode ? "Enabled": "Disable")
+
+	return PLUGIN_HANDLED
+}
+
+public hookSpawnPost(id)
+{
+	if( is_user_alive(id) )
+	{
+		set_user_godmode(id, g_bTestMode)
 	}
 }

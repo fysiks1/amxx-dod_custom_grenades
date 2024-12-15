@@ -60,3 +60,10 @@ Then, `Model1` and `Model2` will be loaded on the first map, `Model2` and `Model
 
 #### Special Values
 A value of zero will load all models in the INI file.
+
+# Commands
+## custom_nade_testmode <1|0>
+Enables (1) or disables (0) test mode.  Run the command without arguments to query the test mode state.
+
+Test mode is used for testing grenade models.  It sets god mode for all players (so you don't die from the grenades) and gives infinite grenades to accelerate testing.
+
