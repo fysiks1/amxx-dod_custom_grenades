@@ -19,7 +19,7 @@ new HamHook:g_TestModeSpawnHook
 
 public plugin_init()
 {
-	register_plugin("DOD Custom Grenades", "2.3.0", "Fysiks")
+	register_plugin("DOD Custom Grenades", "2.3.1", "Fysiks")
 	
 	g_pModeCvar = register_cvar("custom_nade_mode", "1")
 	g_pChanceCvar = register_cvar("custom_nade_chance", "50")
@@ -69,7 +69,7 @@ public grenade_throw(id, ent, iType)
 		{
 			switch( iType )
 			{
-				case DODW_HANDGRENADE, DODW_STICKGRENADE:  // Unprimed nades
+				case DODW_HANDGRENADE, DODW_STICKGRENADE, DODW_MILLS_BOMB:  // Unprimed nades
 				{
 					if( chance(get_pcvar_num(g_pChanceCvar)) )
 					{
@@ -108,7 +108,7 @@ public grenade_throw(id, ent, iType)
 		{
 			switch( iType )
 			{
-				case DODW_HANDGRENADE, DODW_STICKGRENADE, DODW_HANDGRENADE_EX, DODW_STICKGRENADE_EX:  // Unprimed nades
+				case DODW_HANDGRENADE, DODW_STICKGRENADE, DODW_HANDGRENADE_EX, DODW_STICKGRENADE_EX, DODW_MILLS_BOMB:  // Unprimed nades
 				{
 					if( chance(get_pcvar_num(g_pChanceCvar)) )
 					{
@@ -124,7 +124,7 @@ public grenade_throw(id, ent, iType)
 		// give nade
 		switch( iType )
 		{
-			case DODW_HANDGRENADE:
+			case DODW_HANDGRENADE, DODW_MILLS_BOMB:
 			{
 				give_item(id, "weapon_handgrenade")
 			}
